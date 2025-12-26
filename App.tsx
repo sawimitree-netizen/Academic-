@@ -15,29 +15,18 @@ import {
   Trash2,
   BrainCircuit,
   TrendingUp,
-  Plus,
-  Edit2,
-  X,
   Save,
-  ChevronDown,
-  ChevronUp,
-  Layout,
   Lock,
   Unlock,
   FileText,
-  Copy,
-  GripVertical,
-  Settings2,
-  Target,
-  Lightbulb,
-  Clock,
-  MessageSquare,
   RefreshCw,
   CloudCheck,
   Search,
   Filter,
   UserCheck,
-  Quote
+  Quote,
+  MessageSquare,
+  Layout
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 import { 
@@ -55,7 +44,7 @@ import {
   getIconByType,
   INITIAL_SECTIONS
 } from './constants';
-import { SurveyData, AppSettings, SurveyConfig, SurveySection } from './types';
+import { SurveyData, AppSettings, SurveyConfig } from './types';
 
 // Declaration for SweetAlert2 from CDN
 declare const Swal: any;
@@ -337,7 +326,6 @@ const App: React.FC = () => {
     if (result.isConfirmed) {
       setIsClearing(true);
       try {
-        // ส่งคำสั่งล้างข้อมูลไปยัง Google Apps Script
         await fetch(WEB_APP_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -345,7 +333,6 @@ const App: React.FC = () => {
           body: JSON.stringify({ action: 'clearAll' })
         });
 
-        // ล้างข้อมูลในฝั่งแอปพลิเคชัน
         setSubmissions([]);
         localStorage.removeItem(STORAGE_KEY);
         
@@ -547,24 +534,15 @@ const App: React.FC = () => {
             </div>
             {calculateStats ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Section 1: Bio */}
                 <ChartSection title="ตอนที่ 1: จำนวนผู้ตอบแยกตามกลุ่มสาระฯ" data={calculateStats.department} total={submissions.length} />
                 <ChartSection title="ตอนที่ 1: ระดับวุฒิการศึกษา" data={calculateStats.educationLevel} total={submissions.length} />
                 <ChartSection title="ตอนที่ 1: วิทยฐานะปัจจุบัน" data={calculateStats.currentPosition} total={submissions.length} />
                 <ChartSection title="ตอนที่ 1: ระยะเวลาในตำแหน่งปัจจุบัน" data={calculateStats.durationInPosition} total={submissions.length} />
-                
-                {/* Section 2: Stage */}
                 <ChartSection title="ตอนที่ 2: ขั้นตอนการทำผลงานวิชาการ" data={calculateStats.currentStage} total={submissions.length} />
-                
-                {/* Section 3: Need */}
                 <ChartSection title="ตอนที่ 3: ระดับความต้องการเข้าอบรม" data={calculateStats.trainingNeed} total={submissions.length} />
-                
-                {/* Section 4: Topics */}
                 <div className="md:col-span-2">
                   <ChartSection title="ตอนที่ 4: หัวข้อการอบรมที่ต้องการ" data={calculateStats.requestedTopics} total={submissions.length} />
                 </div>
-                
-                {/* Section 5: Format & Time */}
                 <ChartSection title="ตอนที่ 5: รูปแบบการอบรมที่ต้องการ" data={calculateStats.preferredFormat} total={submissions.length} />
                 <ChartSection title="ตอนที่ 5: ระยะเวลาการอบรมที่เหมาะสม" data={calculateStats.preferredDuration} total={submissions.length} />
                 <div className="md:col-span-2">
@@ -615,7 +593,6 @@ const App: React.FC = () => {
                 </button>
               </div>
 
-              {/* ส่วนรายงานรายชื่อผู้ตอบแบบสำรวจ */}
               <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden group transition-all hover:shadow-xl">
                 <div className="p-8 border-b border-slate-50">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -641,7 +618,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
                 <div className="p-0 overflow-x-auto max-h-96 overflow-y-auto custom-scrollbar">
                   {filteredSubmissions.length > 0 ? (
                     <table className="w-full text-left border-collapse">
@@ -649,7 +625,7 @@ const App: React.FC = () => {
                         <tr className="bg-slate-50/50">
                           <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">ลำดับ</th>
                           <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">ชื่อ - สกุล</th>
-                          <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">กลุ่มสาระการเรียนรู้</th>
+                          <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">กลุ่มสาระฯ</th>
                           <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">วันที่ส่ง</th>
                         </tr>
                       </thead>
@@ -664,9 +640,7 @@ const App: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-8 py-4 text-xs text-slate-400 font-medium">
-                              {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('th-TH', { 
-                                day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' 
-                              }) : '-'}
+                              {sub.submittedAt ? new Date(sub.submittedAt).toLocaleDateString('th-TH') : '-'}
                             </td>
                           </tr>
                         ))}
@@ -679,61 +653,24 @@ const App: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
-                <div className="bg-slate-50 p-4 border-t border-slate-100 flex justify-between items-center px-8">
-                  <div className="text-xs font-bold text-slate-500">
-                    แสดงผลเฉพาะกลุ่มสาระฯ: <span className="text-indigo-600">{filterDept}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-slate-400">พบทั้งหมด</span>
-                    <span className="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm shadow-indigo-200">
-                      {filteredSubmissions.length} <span className="text-[10px] font-normal opacity-80">คน</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-lg p-8 border border-slate-100 group transition-all hover:shadow-xl">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2"><Layout className="w-5 h-5 text-blue-500" />จัดการหัวข้อและชื่อหน่วยงาน</h3>
-                  <button onClick={() => handleSaveConfig('หัวข้อ')} className="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 shadow-md active:scale-95 transition-all">
-                    <Save className="w-4 h-4" /> บันทึก
-                  </button>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">หัวข้อหลัก</label>
-                    <input type="text" value={surveyConfig.mainTitle} onChange={(e) => setSurveyConfig(prev => ({ ...prev, mainTitle: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">หัวข้อย่อย</label>
-                    <input type="text" value={surveyConfig.subTitle} onChange={(e) => setSurveyConfig(prev => ({ ...prev, subTitle: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">ชื่อโรงเรียน / หน่วยงาน</label>
-                    <input type="text" value={surveyConfig.schoolName} onChange={(e) => setSurveyConfig(prev => ({ ...prev, schoolName: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 outline-none transition-all" />
-                  </div>
-                </div>
               </div>
 
               <div className="bg-white rounded-3xl shadow-lg p-8 border border-slate-100 group transition-all hover:shadow-xl">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2"><PieChart className="w-5 h-5 text-blue-500" />เป้าหมายการสำรวจ</h3>
-                  <button onClick={() => handleSaveConfig('เป้าหมาย')} className="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 shadow-md active:scale-95 transition-all">
+                  <button onClick={() => handleSaveConfig('เป้าหมาย')} className="bg-blue-600 text-white px-5 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 shadow-md transition-all">
                     <Save className="w-4 h-4" /> บันทึก
                   </button>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">จำนวนผู้ตอบเป้าหมาย (Expected Respondents)</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">จำนวนผู้ตอบเป้าหมาย</label>
                   <div className="flex items-center gap-4">
-                    <input type="number" value={settings.totalExpected || ''} placeholder="เช่น 100" onChange={(e) => setSettings({ totalExpected: parseInt(e.target.value) || 0 })} className="flex-grow px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-bold text-lg transition-all" />
+                    <input type="number" value={settings.totalExpected || ''} onChange={(e) => setSettings({ totalExpected: parseInt(e.target.value) || 0 })} className="flex-grow px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 outline-none font-bold text-lg" />
                     <span className="text-slate-400 font-medium">คน</span>
                   </div>
-                  <p className="mt-2 text-xs text-slate-400 italic">*หากระบุเป็น 0 ระบบจะคำนวณร้อยละโดยใช้จำนวนผู้ที่ตอบเข้ามาจริง</p>
                 </div>
               </div>
 
-              {/* ส่วนรายงานสรุปตอนที่ 6 (ข้อเสนอแนะเพิ่มเติม) */}
               <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden group transition-all hover:shadow-xl">
                 <div className="p-8 border-b border-slate-50 flex items-center gap-3">
                   <div className="bg-amber-50 p-2 rounded-xl text-amber-600"><MessageSquare className="w-6 h-6" /></div>
@@ -747,28 +684,18 @@ const App: React.FC = () => {
                     <div className="space-y-4">
                       {suggestionList.map((item, idx) => (
                         <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 relative group/msg transition-all hover:border-amber-200 hover:bg-white shadow-sm hover:shadow-md">
-                          <Quote className="absolute top-4 right-4 w-6 h-6 text-slate-200 group-hover/msg:text-amber-100 transition-colors" />
+                          <Quote className="absolute top-4 right-4 w-6 h-6 text-slate-200" />
                           <p className="text-slate-700 text-sm leading-relaxed pr-8 whitespace-pre-wrap">{item.text}</p>
                           <div className="mt-4 flex items-center gap-2 pt-3 border-t border-slate-100">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">จาก:</span>
-                            <span className="text-[11px] font-bold text-slate-600">{item.name}</span>
-                            <span className="text-[10px] px-2 py-0.5 bg-white border border-slate-200 rounded-full text-slate-400 font-bold uppercase">
-                              กลุ่มสาระฯ {item.dept}
-                            </span>
+                            <span className="text-[10px] font-black text-slate-400 uppercase">จาก:</span>
+                            <span className="text-[11px] font-bold text-slate-600">{item.name} (กลุ่มสาระฯ {item.dept})</span>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="py-12 text-center">
-                      <MessageSquare className="w-12 h-12 text-slate-100 mx-auto mb-3" />
-                      <p className="text-slate-400 font-medium">ยังไม่มีข้อเสนอแนะเพิ่มเติมจากผู้ตอบแบบสำรวจ</p>
-                    </div>
+                    <div className="py-12 text-center text-slate-400">ยังไม่มีข้อเสนอแนะเพิ่มเติม</div>
                   )}
-                </div>
-                <div className="bg-slate-50 p-4 border-t border-slate-100 px-8 text-right">
-                  <span className="text-xs font-medium text-slate-400">พบข้อเสนอแนะทั้งหมด </span>
-                  <span className="text-sm font-black text-amber-600">{suggestionList.length} ข้อความ</span>
                 </div>
               </div>
 
@@ -790,14 +717,13 @@ const App: React.FC = () => {
       <footer className="py-12 px-4 text-center space-y-2 text-slate-400 text-xs">
         <p className="font-semibold uppercase tracking-widest text-slate-300">{surveyConfig.schoolName}</p>
         <p>Copyright © 2025 by Kru Sawitree Mitreepan</p>
-        <p className="mt-2 opacity-30">Academic Performance Survey System v2.3.0 (Full Data Lifecycle)</p>
+        <p className="mt-2 opacity-30">Academic Performance Survey System v2.3.1</p>
       </footer>
     </div>
   );
 };
 
-// --- Helper Components ---
-
+// Helper Components
 const StatCard = ({ icon, label, value, subLabel, total }: any) => (
   <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-2 hover:shadow-md transition-all">
     <div className="p-3 bg-slate-50 rounded-2xl mb-2">{icon}</div>
